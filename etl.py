@@ -6,16 +6,14 @@ import numpy as np
 import torch
 from transformers import BertTokenizer
 
-YELP_DATA = "./data/yelp_review_training_dataset.jsonl"
-def load_data():
-    with open(YELP_DATA, 'r') as json_file:
+YELP_DATA = "data/yelp_review_training_dataset.jsonl"
+def load_data(root_dir):
+    path = root_dir + YELP_DATA
+    with open(path, 'r') as json_file:
         json_list = list(json_file)
 
-    i = 0
     text, labels = [], []
     for json_str in json_list:
-        if i == 500:
-            break
         result = json.loads(json_str)
         text.append(result['text'])
         labels.append(result['stars'])
@@ -44,6 +42,5 @@ def tokenize(text_batch):
 
 if __name__ == "__main__":
     text, labels = load_data()
-    partition(text, labels)
     X_train, y_train, X_val, y_val = partition(text, labels)
-    encoding = tokenize(X_train[batch_size * i: batch_size * (i + 1)])
+    encoding = tokenize(X_train[:10])
