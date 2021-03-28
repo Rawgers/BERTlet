@@ -5,15 +5,24 @@ import torch as th
 from torch import nn
 
 class LanguageModel(nn.Module):
-    def __init__(self, bert_model_link, output_shape):
+    def __init__(self, bert_model_link, output_shape, lstm_hidden_size=256,
+            batch_first=True, num_lstm_layers=1, use_residue=False, dropout=0):
         super().__init__()
-
+        self.use_residue = use_residue
         self.bert = BertModel.from_pretrained(bert_model_link)
-        self.hidden_size = self.bert.config.hidden_size
-        self.linear = nn.Linear(self.hidden_size, output_shape)
+        self.lstm = nn.LSTM(self.bert.hidden_size, lstm_hidden_size
+                batch_first=batch_first, dropout=dropout)
+        self.dropout = nn.Dropout(dropout)
+        linear_input_shape = lstm_hidden_size + self.bert.hidden_size if \
+                use_residue else lstm_hidden_size
+
+        self.linear = nn.Linear(linear_input_shape, output_shape)
 
     def forward(self,x):
         bert_output = self.bert(**x)
-        linear_output = self.linear(bert_output.pooler_output)
+        lstm_output = self.lstm(bert_output.last_hidden_state)
+        dropout_output = self.dropout(lstm_output)
+        input_to_linear = th.vstach((dropout_output, bert_output.pooler_output)) if self.use_residue else dropout_output
+        linear_output = self.linear(input_to_linear)
         return linear_output
 
