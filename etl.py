@@ -25,15 +25,15 @@ def load_data():
 def partition(text, labels, train_ratio=0.8):
     shuffled = list(zip(text, labels))
     shuffle(shuffled)
-    validation_size = math.floor(len(text) * train_ratio)
+    train_size = math.floor(len(text) * train_ratio)
 
     shuffled_data = [d for d, _ in shuffled]
     shuffled_labels = [l for _, l in shuffled]
 
-    training_data = shuffled_data[:validation_size]
-    training_labels = shuffled_labels[:validation_size]
-    validation_data = shuffled_data[validation_size:]
-    validation_labels = shuffled_labels[validation_size:]
+    training_data = shuffled_data[:train_size]
+    training_labels = shuffled_labels[:train_size]
+    validation_data = shuffled_data[train_size:]
+    validation_labels = shuffled_labels[train_size:]
     
     return training_data, training_labels, validation_data, validation_labels
 
