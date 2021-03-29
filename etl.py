@@ -19,12 +19,7 @@ def load_data(root_dir, mode="classification"):
         labels.append(result['stars'])
 
     if mode == "classification":
-        labels = th.LongTensor(labels)
-        size = labels.size()[0]
-        # import pdb; pdb.set_trace()
-        one_hot = th.zeros((size, 5))
-        one_hot[th.arange(size), labels - 1] = 1
-        labels = one_hot
+        labels = th.LongTensor(labels) - 1
     elif mode == "regression":
         labels = th.tensor(labels)
 
