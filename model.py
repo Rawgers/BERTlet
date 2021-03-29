@@ -4,7 +4,7 @@ import numpy as np
 import torch as th
 from torch import nn
 
-class LanguageModel(nn.Module):
+class NovelModel(nn.Module):
     def __init__(self, bert_model_link, output_shape, lstm_hidden_size=256,
             batch_first=True, num_lstm_layers=1, use_residue=False, dropout=0):
         super().__init__()
@@ -25,5 +25,16 @@ class LanguageModel(nn.Module):
         last_dropout = dropout_output[:, -1, :].squeeze()
         input_to_linear = th.hstack((last_dropout, bert_output.pooler_output)) if self.use_residue else last_dropout
         linear_output = self.linear(input_to_linear)
+        return linear_output
+
+class NaiveBertModel(nn.Module):
+    def __init__(self, bert_model_link, output_shape):
+        super().__init__()
+        self.bert = BertModel.from_pretrained(bert_model_link)
+        self.linear = nn.Linear(self.bert.config.hidden_size, output_shape)
+
+    def forward(self,x):
+        bert_output = self.bert(**x)
+        linear_output = self.linear(bert_output.pooler_output)
         return linear_output
 
