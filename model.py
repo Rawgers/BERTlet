@@ -28,7 +28,7 @@ class NovelModel(nn.Module):
         return linear_output
 
 class NaiveBertModel(nn.Module):
-    def __init__(self, bert_model_link, output_shape)
+    def __init__(self, bert_model_link, output_shape):
         super().__init__()
         self.bert = BertModel.from_pretrained(bert_model_link)
         self.linear = nn.Linear(self.bert.config.hidden_size, output_shape)
